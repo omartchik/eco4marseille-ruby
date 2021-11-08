@@ -1,0 +1,31 @@
+version: '3'
+services:
+  web:
+    depends_on:
+      - db
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: bash -c "rm -f tmp/pids/server.pid && rake db:create && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    ports:
+      - "3000:3000"
+    networks:
+      - eco4marseille
+
+  db:
+    image: mysql:5.7
+    env_file: ./.env
+    environment:
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+    volumes:
+      - my-db:/var/lib/mysql
+    networks:
+      - eco4marseille
+volumes:
+  my-db:
+networks:
+  eco4marseille:
+    driver: bridge
